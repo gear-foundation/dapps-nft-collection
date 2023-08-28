@@ -43,11 +43,7 @@ function useAuth() {
           alert.error(data.message);
         }
 
-        if (data.errors) {
-          alert.error(data.message);
-        } else {
-          alert.error('Something wrong');
-        }
+        console.log(data);
 
         setAuthToken(null);
         await login(account);

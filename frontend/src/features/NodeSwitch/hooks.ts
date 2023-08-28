@@ -18,7 +18,7 @@ function useNodeAddress() {
 }
 
 function useSearchParamsSetup() {
-  const contractAddress = ADDRESS.CONTRACT;
+  const contractAddress = ADDRESS.FACTORY;
   const { nodeAddress } = useNodeAddress();
 
   const { pathname } = useLocation();

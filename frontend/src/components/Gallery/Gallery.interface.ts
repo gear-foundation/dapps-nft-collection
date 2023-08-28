@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 
 export interface GalleryProps {
-  data: ReactElement[];
+  data: { id: string; component: ReactElement }[];
   emptyText?: JSX.Element;
 }

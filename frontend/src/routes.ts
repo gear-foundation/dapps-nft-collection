@@ -3,7 +3,7 @@ export const EXPLORE = '/explore';
 export const YOUR_SPACE = '/your-space';
 export const CREATE_COLLECTION = '/create-collection';
 export const COLLECTION = '/collection';
-export const NFT = '/nft/:id';
+export const NFT = '/nft';
 
 export const menu = {
   'Explore NFTs & Collections': {

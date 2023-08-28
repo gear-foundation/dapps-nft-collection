@@ -14,7 +14,7 @@ export const SEARCH_PARAMS = {
 
 export const ADDRESS = {
   NODE: process.env.REACT_APP_NODE as string,
-  CONTRACT: process.env.REACT_APP_CONTRACT_ADDRESS as HexString,
+  FACTORY: process.env.REACT_APP_FACTORY_ADDRESS as HexString,
   DEFAULT_NODES: process.env.REACT_APP_DEFAULT_NODES_URL as string,
   DEFAULT_CONTRACT: process.env.REACT_APP_DEFAULT_CONTRACT_ADDRESS as HexString,
   DEFAULT_TESTNET_CONTRACT: process.env.REACT_APP_DEFAULT_TESTNET_CONTRACT_ADDRESS as HexString,

@@ -94,6 +94,10 @@
       &:hover {
         background-color: theme-var($background-primary);
       }
+
+      &:disabled {
+        background: linear-gradient(270deg,#64ffdb12,#00ffc412);;
+      }
     }
 
   }

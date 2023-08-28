@@ -23,22 +23,22 @@ import { YourSpacePage } from './pages/YourSpacePage';
 import { CreateCollectionPage } from './pages/CreateCollectionPage';
 import { CollectionPage } from './pages/CollectionPage';
 import { NftPage } from './pages/NftPage';
+import { useCollectionsState } from './features/Collection/hooks';
 
 function AppComponent() {
   const { isApiReady } = useApi();
   const { isAccountReady, account } = useAccount();
   const { state, isStateRead } = useFactoryState();
-
+  const { isCollectionsRead } = useCollectionsState();
   const setContractAccount = useSetAtom(ACCOUNT_ATOM);
 
   useEffect(() => {
     if (isStateRead && state && isAccountReady && account) {
-      console.log(account);
       setContractAccount(account);
     }
   }, [state, isStateRead, account, isAccountReady, setContractAccount]);
 
-  const isAppReady = isApiReady && isAccountReady && isStateRead;
+  const isAppReady = isApiReady && isAccountReady && isStateRead && isCollectionsRead;
 
   useWalletSync();
   useAuthSync();
@@ -92,7 +92,7 @@ function AppComponent() {
                 }
               />
               <Route
-                path={NFT}
+                path={`${NFT}/:id`}
                 element={
                   <ProtectedRoute>
                     <NftPage />
