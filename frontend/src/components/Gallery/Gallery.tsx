@@ -1,15 +1,19 @@
+import { Fragment } from 'react';
 import { GalleryProps } from './Gallery.interface';
 import styles from './Gallery.module.scss';
 import { cx } from '@/utils';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { Button } from '@/ui';
 
 function Gallery({ data, emptyText }: GalleryProps) {
   return (
     <>
       {data.length ? (
-        <div className={cx(styles['gallery-wrapper'])}>{data.map((item) => item)}</div>
+        <div className={cx(styles['gallery-wrapper'])}>
+          {data.map((item) => (
+            <Fragment key={item.id}>{item.component}</Fragment>
+          ))}
+        </div>
       ) : (
         <div className={cx(styles['empty-wrapper'])}>
           {new Array(4).fill(0).map(() => (
@@ -20,9 +24,8 @@ function Gallery({ data, emptyText }: GalleryProps) {
             <div className={cx(styles['empty-text-main'])}>
               {emptyText || (
                 <>
-                  <span>Create a new collection</span>
-                  <span>or suggest to specify custom contract address, switch to another network</span>
-                  <Button label="Create Collection" variant="primary" />
+                  <span>No items yet</span>
+                  <span>Something is wrong</span>
                 </>
               )}
             </div>

@@ -11,6 +11,7 @@ import menuIcon from '@/assets/icons/burger-menu-icon.svg';
 import { BurgerMenu } from '../BurgerMenu/BurgerMenu';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
 import { ContractInfo } from '@/features/Auth/components';
+import { CREATE_COLLECTION } from '@/routes';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
@@ -59,7 +60,9 @@ function Header({ menu }: HeaderProps) {
                   </nav>
                   <div className={cx(styles.items)}>
                     <Search value="" onChange={() => null} />
-                    <Button variant="primary" label="Create" className={cx(styles['create-btn'])} />
+                    <Link to={CREATE_COLLECTION}>
+                      <Button variant="primary" label="Create" className={cx(styles['create-btn'])} />
+                    </Link>
                     <WalletInfo account={account} />
                     <ContractInfo />
                   </div>

@@ -1,5 +1,5 @@
-import { ReactElement } from 'react';
+import { Collection } from '../../types';
 
 export interface CollectionProps {
-  data: ReactElement[];
+  data: Collection;
 }

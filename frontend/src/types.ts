@@ -13,54 +13,43 @@ export type SVGComponent = FunctionComponent<
 
 export type Handler = (event: Event) => void;
 
-export interface GamesState {
-  [key: string]: GameState;
+type CollectionPrefs = {
+  address: HexString;
+  timeCreation: string;
+  collectionId: string;
+};
+
+export type OwnerToCollection = [HexString, CollectionPrefs][];
+
+export interface ProgramFactoryState {
+  collectionCodeId: string;
+  ownerToAddress: OwnerToCollection;
+  sft: null;
+  txId: number;
 }
 
-export interface Car {
-  balance: string;
-  penalty: string;
-  position: string;
-  speed: string;
-  roundResult: Record<string, string> | null;
-}
+export type Token = {};
 
-export interface Cars {
-  [key: string]: Car;
-}
-
-export interface GameState {
-  cars: Cars;
-  carIds: string[];
-  currentTurn: string;
-  state: 'PlayerAction' | 'Finished';
-  result: 'Win' | 'Draw' | 'Lose';
-  currentRound: string;
-}
-
-export type CurrentGameState = GameState;
-
-export interface MsgIdToGameIdState {}
-
-export interface ConfigState {
-  leaderboardContract: any;
-  ftContract: any;
-  nftMembershipGuard: any;
-  tokensOnWin: string;
-  tokensOnDraw: string;
-  tokensOnLose: string;
-}
-
-export interface ProgramState {
-  admin: HexString;
-  strategyIds: string[];
-  games: GamesState;
-  msgIdToGameId: MsgIdToGameIdState;
-  config: ConfigState;
+export interface CollectionState {
+  availableMedia: string[];
+  tokens: [string, Token][];
+  owner: string;
+  transactions: [];
+  collection: {
+    name: string;
+    description: string;
+  };
+  nonce: string;
+  constraints: {
+    admins: [string];
+    authorizedMinters: [];
+    verifiedContracts: [];
+  };
+  tokensMetadata: [];
 }
 
 export interface ProgramStateRes {
-  state?: ProgramState;
+  state?: ProgramFactoryState;
   isStateRead: Boolean;
   error: string;
 }

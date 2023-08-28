@@ -29,7 +29,7 @@ function WalletInfo({ account }: WalletInfoProps) {
           <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
             {address && (
               <Identicon
-                value={ADDRESS.CONTRACT}
+                value={ADDRESS.FACTORY}
                 size={16}
                 theme="polkadot"
                 className={cx(styles['description-icon'])}

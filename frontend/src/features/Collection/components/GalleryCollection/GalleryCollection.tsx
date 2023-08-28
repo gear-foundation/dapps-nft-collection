@@ -6,18 +6,12 @@ import 'swiper/css/navigation';
 import { Gallery } from '@/components/Gallery';
 import { MultiSwitch } from '@/components/MultiSwitch/MultiSwitch';
 import { Dropdown } from '@/ui';
+import { Option } from '@/components/MultiSwitch/MultiSwitch.interfaces';
 
-function GalleryCollection({ title, data }: GalleryCollectionProps) {
-  const switchOptions = [
-    {
-      name: 'NFTs',
-      value: 'nfts',
-    },
-    {
-      name: 'Collections',
-      value: 'collections',
-    },
-  ];
+function GalleryCollection({ title, data, emptyText, switchMenu, filterOptions }: GalleryCollectionProps) {
+  const handleItemClick = (option: Option) => {
+    switchMenu?.find(({ name }) => option.name === name)?.onSelect?.();
+  };
 
   return (
     <div className={cx(styles.container)}>
@@ -25,23 +19,20 @@ function GalleryCollection({ title, data }: GalleryCollectionProps) {
         <div className={cx(styles.heading)}>
           {title && <h4 className={cx(styles.title)}>{title}</h4>}
           <div className={cx(styles.preferences)}>
-            <MultiSwitch options={switchOptions} />
-            <Dropdown
-              label="Available to Mint"
-              menu={{
-                'Available to Mint': {
-                  label: 'Available to Mint',
-                  value: 'availableToMint',
-                },
-              }}
-              onItemClick={() => null}
-            />
+            {switchMenu && (
+              <MultiSwitch
+                options={switchMenu}
+                defaultSelected={switchMenu.find((item) => item.activeByDefault)?.name}
+                onSelectOption={(option) => handleItemClick(option)}
+              />
+            )}
+            {filterOptions && <Dropdown label="Available to Mint" menu={filterOptions} onItemClick={() => null} />}
           </div>
         </div>
         <span className={cx(styles.results)}>{data.length} results</span>
       </div>
       <div className={cx(styles['gallery-wrapper'])}>
-        <Gallery data={data} />
+        <Gallery data={data} emptyText={emptyText} />
       </div>
     </div>
   );
