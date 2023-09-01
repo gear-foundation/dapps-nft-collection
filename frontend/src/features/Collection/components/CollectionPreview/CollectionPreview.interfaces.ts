@@ -1,6 +1,5 @@
-import { Collection, Token } from '../../types';
+import { Collection } from '../../types';
 
 export interface CollectionPreviewProps {
   collection: Collection;
-  tokens: Token[];
 }

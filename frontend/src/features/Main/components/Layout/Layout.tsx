@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { useAtomValue } from 'jotai';
 import { Link } from '@ui';
 import styles from './Layout.module.scss';
@@ -7,13 +8,11 @@ import { Button } from '@/ui';
 import { NftPreview } from '@/features/Nft/components/NftPreview';
 import { CollectionPreview } from '@/features/Collection/components/CollectionPreview';
 import { Swiper } from '@/components/Swiper';
-import { COLLECTION, CREATE_COLLECTION } from '@/routes';
+import { COLLECTION, CREATE_COLLECTION, EXPLORE } from '@/routes';
 import { COLLECTIONS } from '@/features/Collection/atoms';
 
 function Layout() {
   const collections = useAtomValue(COLLECTIONS);
-
-  console.log(collections);
 
   return (
     <div className={cx(styles.container)}>
@@ -30,7 +29,9 @@ function Layout() {
             <Link to={CREATE_COLLECTION}>
               <Button label="Create Collection" variant="primary" />
             </Link>
-            <Button label="Explore" variant="primary" />
+            <Link to={EXPLORE}>
+              <Button label="Explore" variant="primary" />
+            </Link>
           </div>
         </div>
       </div>
@@ -42,38 +43,55 @@ function Layout() {
 
             return (
               <Link to={`${COLLECTION}/${id}`}>
-                <CollectionPreview collection={collection} tokens={collection.tokens} />
+                <CollectionPreview collection={collection} />
               </Link>
-            ); //TODO pass and sort by creation date
+            );
           })}
           wrapperClass={cx(styles['with-padding'])}
           withNavigation
         />
         <Swiper
           title="Recently Created Collections"
-          data={Object.keys(collections).map((id) => {
-            const collection = collections[id];
+          data={Object.keys(collections)
+            .sort((a, b) =>
+              moment(collections[b].timeCreation, 'YYYY-M-D HH:mm').diff(
+                moment(collections[a].timeCreation, 'YYYY-M-D HH:mm'),
+              ),
+            )
+            .map((id) => {
+              const collection = collections[id];
 
-            return (
-              <Link to={`${COLLECTION}/${id}`}>
-                <CollectionPreview collection={collection} tokens={collection.tokens} />
-              </Link>
-            ); //TODO pass and sort by creation date
-          })}
+              return (
+                <Link to={`${COLLECTION}/${id}`}>
+                  <CollectionPreview collection={collection} />
+                </Link>
+              );
+            })}
           wrapperClass={cx(styles['with-padding'])}
           withNavigation
         />
         <Swiper
           title="Recently Minted NFTs"
-          data={Object.keys(collections).map((id) => {
-            const collection = collections[id];
+          data={Object.keys(collections)
+            .map((id) => {
+              const collection = collections[id];
 
-            return (
-              <Link to={`${COLLECTION}/${id}`}>
-                <CollectionPreview collection={collection} tokens={collection.tokens} />
+              return collection.tokens;
+            })
+            .flat()
+            .sort((a, b) => moment(b.timeMinted, 'YYYY-M-D HH:mm').diff(moment(a.timeMinted, 'YYYY-M-D HH:mm')))
+            .slice(0, 20)
+            .map((token) => (
+              <Link to={`${COLLECTION}/${token.id}`}>
+                <NftPreview
+                  url={token.medium}
+                  name={token.name}
+                  collectionName={token.collectionName}
+                  owner={token.owner}
+                  timeMinted={token.timeMinted}
+                />
               </Link>
-            ); //TODO pass and sort by creation date
-          })}
+            ))}
           wrapperClass={cx(styles['with-padding'])}
           withNavigation
         />

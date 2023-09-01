@@ -103,8 +103,15 @@ function useCollectionsState() {
                 tokens: collection.tokens.map((token, i) => ({
                   ...token,
                   name: `NFT on Vara Incentivized Testnet - ${i + 1}`,
+                  description: `This one-of-a-kind NFT is more than just collectible; 
+                  this is a token of ownership, enabling you to hold a piece of this dynamic 
+                  digital tapestry and become part of its legacy. 
+                  Through smart contracts on Vara Incentivized Testnet, 
+                  we've ensured that each transaction is transparent, 
+                  secure, and eco-friendly.`,
                   collectionName: collection.collection.name,
                   timeMinted: token.owner ? token.timeMinted : collection.timeCreation,
+                  id: `${collection.id}/${i}`,
                 })),
               },
             }),

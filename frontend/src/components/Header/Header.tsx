@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Button, Link, Search } from '@ui';
+import { Button, Link } from '@ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { cx } from '@/utils';
 import styles from './Header.module.scss';
@@ -12,6 +12,7 @@ import { BurgerMenu } from '../BurgerMenu/BurgerMenu';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
 import { ContractInfo } from '@/features/Auth/components';
 import { CREATE_COLLECTION } from '@/routes';
+import { Search } from '../Search';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
@@ -59,7 +60,7 @@ function Header({ menu }: HeaderProps) {
                       })}
                   </nav>
                   <div className={cx(styles.items)}>
-                    <Search value="" onChange={() => null} />
+                    <Search />
                     <Link to={CREATE_COLLECTION}>
                       <Button variant="primary" label="Create" className={cx(styles['create-btn'])} />
                     </Link>

@@ -42,6 +42,10 @@
   
     .button {
       width: 240px;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
       
       &-grey {
         background: #F3F3F3;

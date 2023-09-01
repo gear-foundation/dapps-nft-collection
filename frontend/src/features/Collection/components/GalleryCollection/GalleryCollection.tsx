@@ -13,6 +13,12 @@ function GalleryCollection({ title, data, emptyText, switchMenu, filterOptions }
     switchMenu?.find(({ name }) => option.name === name)?.onSelect?.();
   };
 
+  const handleFilterItemClick = (key: string) => {
+    if (filterOptions) {
+      filterOptions[key]?.onSelect?.();
+    }
+  };
+
   return (
     <div className={cx(styles.container)}>
       <div className={cx(styles.header)}>
@@ -26,7 +32,13 @@ function GalleryCollection({ title, data, emptyText, switchMenu, filterOptions }
                 onSelectOption={(option) => handleItemClick(option)}
               />
             )}
-            {filterOptions && <Dropdown label="Available to Mint" menu={filterOptions} onItemClick={() => null} />}
+            {filterOptions && (
+              <Dropdown
+                label="Available to Mint"
+                menu={filterOptions}
+                onItemClick={(key) => handleFilterItemClick(key)}
+              />
+            )}
           </div>
         </div>
         <span className={cx(styles.results)}>{data.length} results</span>

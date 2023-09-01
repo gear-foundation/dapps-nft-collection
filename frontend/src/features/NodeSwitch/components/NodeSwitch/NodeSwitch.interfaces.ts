@@ -1,6 +1,12 @@
-import { ReactElement } from 'react';
+import { FunctionComponent, ReactElement, SVGProps } from 'react';
+
+export type Chain = {
+  name: string;
+  address: string;
+  icon: FunctionComponent<SVGProps<SVGSVGElement> & { title?: string | undefined }>;
+} | null;
 
 export type NodeSwitchProps = {
   children: ReactElement;
-  onChainChange: (newChain: string) => void;
+  onChainChange: (newChain: Chain) => void;
 };

@@ -1,48 +1,56 @@
+import moment from 'moment';
+import { useAtomValue } from 'jotai';
 import { HexString } from '@polkadot/util/types';
 import { useAccount } from '@gear-js/react-hooks';
 import { createSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { cx, getIpfsAddress } from '@/utils';
+import { cx, getIpfsAddress, shortenString } from '@/utils';
 import { useNodeAddress } from '@/features/NodeSwitch/hooks';
-import { ReactComponent as SearchSVG } from '../../assets/images/search.svg';
+import icUserStar from '../../assets/images/ic-user-star-16.svg';
+import icUserPlus from '@/features/Collection/assets/images/user-plus.svg';
+import clock from '../../assets/images/watch-later-24px.svg';
+import labelRounded from '@/features/Collection/assets/images/label-24px-rounded.svg';
 import { ReactComponent as BackArrowSVG } from '../../assets/images/back-arrow.svg';
 import { getImageUrl } from '../../utils';
 import styles from './NFT.module.scss';
 import { TransferNFTModal } from '../TransferNftModal';
 
+import { COLLECTIONS } from '@/features/Collection/atoms';
+import { NftSpec } from '../NftSpec';
+
 type Params = {
-  programId: HexString;
-  id: string;
+  collectionId: HexString;
+  nftId: string;
 };
 
 function NFT() {
-  const { programId, id } = useParams() as Params;
+  const collections = useAtomValue(COLLECTIONS);
+  const { collectionId, nftId } = useParams() as Params;
   const { account } = useAccount();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const { isTestnet } = useNodeAddress();
-  const nfts: any = [];
-  const nft = nfts.find((item: any) => item.programId === programId && item.id === id);
-  const { name, collection, description, owner, attribUrl } = nft || {};
+  const nft = collections[collectionId].tokens[Number(nftId)];
+  const { name, description, owner, medium, collectionName, timeMinted } = nft || {};
   const [details, setDetails] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if (!attribUrl) return;
+    if (!medium) return;
 
-    const isIPFSHash = !Array.isArray(attribUrl);
+    const isIPFSHash = !Array.isArray(medium);
 
     if (isIPFSHash) {
-      const url = getIpfsAddress(attribUrl);
+      const url = getIpfsAddress(medium);
 
       fetch(url)
         .then((response) => response.json())
         .then((result) => setDetails(result));
     } else {
-      setDetails(attribUrl);
+      setDetails(medium);
     }
-  }, [attribUrl]);
+  }, [medium]);
 
   useEffect(() => {
     setSearchQuery('');
@@ -64,8 +72,8 @@ function NFT() {
 
   const handleSearchInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => setSearchQuery(target.value);
 
-  const handleOwnerButtonClick = () =>
-    navigate({ pathname: '/list', search: createSearchParams({ query: owner || '' }).toString() });
+  const handleOwnerButtonClick = (ownerAddress: string) =>
+    navigate({ pathname: '/list', search: createSearchParams({ query: ownerAddress || '' }).toString() });
 
   const handleBackButtonClick = () => navigate(-1);
 
@@ -75,74 +83,63 @@ function NFT() {
 
   return (
     <>
-      <div className={cx(styles.cont, styles.container)}>
+      <div className={cx(styles.container)}>
         {nft ? (
           <>
-            <div className={styles.innerContainer}>
-              <div className={styles.imageWrapper}>
-                <img src={getImageUrl(nft.mediaUrl)} alt="" />
+            <div className={cx(styles.wrapper)}>
+              <div className={styles.innerContainer}>
+                <div className={styles.imageWrapper}>
+                  <img src={getImageUrl(nft.medium)} alt="" />
+                </div>
               </div>
 
-              <div className={styles.footerWrapper}>
-                <footer className={styles.footer}>
-                  <p className={styles.owner}>
-                    <span className={styles.ownerHeading}>Owner:</span>
-                    <span className={styles.ownerText}>{owner}</span>
-                  </p>
+              <div className={styles.innerContainer}>
+                <h2 className={styles.name}>{name}</h2>
+                <p className={styles.collection}>{collectionName}</p>
+                <p className={styles.description}>{description}</p>
 
-                  <button type="button" className={styles.ownerButton} onClick={handleOwnerButtonClick}>
-                    View NFTs
-                  </button>
-                </footer>
+                <div className={styles.buttons}>
+                  {!isTestnet && account?.decodedAddress === owner && (
+                    <button type="button" className={styles.transferButton} onClick={openTransferModal}>
+                      Transfer
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-
-            <div className={styles.innerContainer}>
-              <h2 className={styles.name}>{name}</h2>
-              <p className={styles.collection}>{collection}</p>
-              <p className={styles.description}>{description}</p>
-
-              {attribUrl && (
-                <div>
-                  <header className={styles.header}>
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="search" className={styles.label}>
-                      NFT Details:
-                    </label>
-
-                    <div className={styles.inputWrapper}>
-                      <SearchSVG />
-                      <input
-                        type="text"
-                        placeholder="Search"
-                        id="search"
-                        value={searchQuery}
-                        onChange={handleSearchInputChange}
-                      />
-                    </div>
-                  </header>
-
-                  <ul className={styles.details}>{getDetails()}</ul>
-                </div>
-              )}
-
-              <div className={styles.buttons}>
-                <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
-                  <BackArrowSVG />
-                  <span>Back</span>
-                </button>
-
-                {!isTestnet && account?.decodedAddress === owner && (
-                  <button type="button" className={styles.transferButton} onClick={openTransferModal}>
-                    Transfer
+            <div className={styles.footerWrapper}>
+              <footer className={styles.footer}>
+                <NftSpec title="Token Standart:" value="gNFT" icon={labelRounded} />
+                <NftSpec
+                  title="Minted:"
+                  value={moment(timeMinted, 'YYYY-M-D HH:mm').format('DD.MM.YYYY')}
+                  icon={clock}
+                />
+                <div className={cx(styles['spec-wrapper'])}>
+                  <NftSpec
+                    title="Created by:"
+                    value={shortenString(collections[collectionId].owner, 3)}
+                    icon={icUserPlus}
+                  />
+                  <button className={cx(styles['view-button'])} onClick={() => handleOwnerButtonClick(owner)}>
+                    View
                   </button>
-                )}
-              </div>
+                </div>
+                <div className={cx(styles['spec-wrapper'])}>
+                  <NftSpec title="Owned by:" value={shortenString(owner || '', 3)} icon={icUserStar} />
+                  <button
+                    className={cx(styles['view-button'])}
+                    disabled={!owner}
+                    onClick={() => handleOwnerButtonClick(owner)}>
+                    View
+                  </button>
+                </div>
+              </footer>
             </div>
           </>
         ) : (
           <p>
-            NFT with id {id} in {programId} contract not found.
+            NFT with id {nftId} in {collectionId} contract not found.
           </p>
         )}
       </div>

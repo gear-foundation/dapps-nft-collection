@@ -3,21 +3,25 @@ import { useAtom } from 'jotai';
 import { useAlert, useAccount, Account } from '@gear-js/react-hooks';
 import { useEffect } from 'react';
 import { web3FromAddress } from '@polkadot/extension-dapp';
-import { AUTH_MESSAGE, AUTH_TOKEN_ATOM, AUTH_TOKEN_LOCAL_STORAGE_KEY } from './consts';
+import { AUTH_MESSAGE, AUTH_TOKEN_LOCAL_STORAGE_KEY } from './consts';
+import { AUTH_TOKEN_ATOM, IS_AUTH_READY_ATOM, TESTNET_USERNAME_ATOM } from './atoms';
 import { fetchAuth, post } from './utils';
 import { AuthResponse, ISignInError, SignInResponse } from './types';
-
-import { NOT_AUTHORIZED, PLAY } from '@/App.routes';
+import { LOGIN, NOT_AUTHORIZED, MAIN } from '@/routes';
 
 function useAuth() {
-  const { login, logout } = useAccount();
+  const { account, login, logout } = useAccount();
   const alert = useAlert();
   const [authToken, setAuthToken] = useAtom(AUTH_TOKEN_ATOM);
+  const [isAuthReady, setIsAuthReady] = useAtom(IS_AUTH_READY_ATOM);
+  const [testnameUsername, setTestnameUsername] = useAtom(TESTNET_USERNAME_ATOM);
 
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || PLAY;
+  const from = location.state?.from?.pathname || MAIN;
+  const isAwaitingVerification = account && !authToken;
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const signIn = async (account: Account) => {
     const { address } = account;
 
@@ -30,6 +34,7 @@ function useAuth() {
         data: AUTH_MESSAGE,
         type: 'bytes',
       });
+
       const res = await post('auth/login', {
         signature,
         publicKey: address,
@@ -38,22 +43,18 @@ function useAuth() {
 
       if (!res.ok) {
         const data: ISignInError = await res.json();
-
-        if (data.message) {
-          alert.error(data.message);
-        }
-
-        console.log(data);
+        alert.error(data.message);
 
         setAuthToken(null);
+        setTestnameUsername('');
         await login(account);
-        navigate(NOT_AUTHORIZED, { replace: true });
+        navigate(`/${NOT_AUTHORIZED}`, { replace: true });
       } else {
         const data: SignInResponse = await res.json();
-        const { accessToken } = data;
-
+        const { accessToken, username } = data;
         await login(account);
         setAuthToken(accessToken);
+        setTestnameUsername(username || '');
         navigate(from, { replace: true });
       }
     } catch (e) {
@@ -64,33 +65,50 @@ function useAuth() {
   const signOut = () => {
     logout();
     setAuthToken(null);
+    navigate(LOGIN, { replace: true });
   };
 
   const auth = () => {
-    if (!authToken) return;
+    const localStorageToken = localStorage.getItem(AUTH_TOKEN_LOCAL_STORAGE_KEY);
 
-    fetchAuth<AuthResponse>('auth/me', 'PUT', authToken).catch(({ message }: Error) => {
-      signOut();
-      alert.error(message);
-    });
+    if (!localStorageToken) {
+      setIsAuthReady(true);
+      if (!isAwaitingVerification) logout();
+      return;
+    }
+
+    fetchAuth<AuthResponse>('auth/me', 'PUT', localStorageToken)
+      .then(({ username }) => {
+        setAuthToken(localStorageToken);
+        setTestnameUsername(username || '');
+      })
+      .catch(({ message }: Error) => {
+        signOut();
+        localStorage.removeItem(AUTH_TOKEN_LOCAL_STORAGE_KEY);
+        alert.error(message);
+      })
+      .finally(() => setIsAuthReady(true));
   };
 
-  return { authToken, signIn, signOut, auth };
+  return { authToken, signIn, signOut, auth, isAuthReady, isAwaitingVerification, testnameUsername };
 }
 
 function useAuthSync() {
-  const { authToken, auth } = useAuth();
+  const { isAccountReady } = useAccount();
+  const { authToken, isAuthReady, auth } = useAuth();
 
   useEffect(() => {
+    if (!isAccountReady) return;
     auth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authToken]);
+  }, [isAccountReady]);
 
   useEffect(() => {
+    if (!isAuthReady) return;
     if (!authToken) return localStorage.removeItem(AUTH_TOKEN_LOCAL_STORAGE_KEY);
 
     localStorage.setItem(AUTH_TOKEN_LOCAL_STORAGE_KEY, authToken);
-  }, [authToken]);
+  }, [isAuthReady, authToken]);
 }
 
 export { useAuth, useAuthSync };

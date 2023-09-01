@@ -11,11 +11,12 @@ export interface DropdownProps {
   label?: string | JSX.Element;
   menu: DropdownMenu;
   activeValue?: string;
+  defaultSelected?: string;
   toggleArrowSize?: 'small' | 'medium' | 'large';
   alignMenu?: 'left' | 'center' | 'right';
   className?: {
     menu?: string;
     menuItem?: string;
   };
-  onItemClick: (item: DropdownMenuItem) => void;
+  onItemClick: (key: string, item: DropdownMenuItem) => void;
 }

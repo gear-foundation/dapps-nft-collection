@@ -29,6 +29,7 @@ module.exports = {
     'react/button-has-type': 'off',
     'spaced-comment': 'off',
     'react/jsx-no-useless-fragment': 'off',
+    'max-classes-per-file': 'off',
     'import/extensions': [
       'error',
       'ignorePackages',

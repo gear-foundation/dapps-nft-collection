@@ -13,6 +13,7 @@ export interface GalleryCollectionProps {
     [key: string]: {
       label: string;
       value: string;
+      onSelect?: () => void;
     };
   };
   emptyText?: ReactElement;

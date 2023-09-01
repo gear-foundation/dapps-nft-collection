@@ -8,6 +8,7 @@ import { useClickOutside } from '@/hooks';
 function Dropdown({
   label,
   menu,
+  defaultSelected,
   toggleArrowSize = 'small',
   alignMenu = 'center',
   className,
@@ -16,6 +17,7 @@ function Dropdown({
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLButtonElement>(null);
+  const [chosenItem, setChosenItem] = useState<string>(defaultSelected || Object.keys(menu)[0]);
 
   useClickOutside(
     () => {
@@ -25,15 +27,16 @@ function Dropdown({
     dropdownRef,
   );
 
-  const handleItemCLick = (item: DropdownMenuItem) => {
+  const handleItemCLick = (key: string, item: DropdownMenuItem) => {
     setOpen(false);
-    onItemClick(item);
+    onItemClick(key, item);
+    setChosenItem(key);
   };
 
   return (
     <div className={cx(styles.container)}>
       <button onClick={() => setOpen(!open)} className={cx(styles.dropdown)} ref={dropdownRef}>
-        <span className={cx(styles['dropdown-label'])}>{label}</span>
+        <span className={cx(styles['dropdown-label'])}>{menu[chosenItem].label}</span>
         <img
           src={selectArrow}
           alt="chevron"
@@ -58,7 +61,9 @@ function Dropdown({
               <li
                 key={menu[item].value}
                 className={cx(styles['dropdown-menu-item'], className?.menuItem ? className.menuItem : '')}>
-                <button onClick={() => handleItemCLick(menu[item])} className={cx(styles['dropdown-menu-button'])}>
+                <button
+                  onClick={() => handleItemCLick(item, menu[item])}
+                  className={cx(styles['dropdown-menu-button'])}>
                   {menu[item].label}
                 </button>
               </li>

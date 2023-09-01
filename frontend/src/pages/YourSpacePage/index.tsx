@@ -48,7 +48,7 @@ function YourSpacePage() {
           .map((collection) => ({
             component: (
               <Link to={`${COLLECTION}/${collection.id}`}>
-                <CollectionPreview collection={collection} tokens={collection.tokens} />
+                <CollectionPreview collection={collection} />
               </Link>
             ),
             id: collection.id,
@@ -64,7 +64,7 @@ function YourSpacePage() {
           .flat()
           .map((token) => ({
             component: (
-              <Link to={`${NFT}`}>
+              <Link to={`${NFT}/${token.id}`}>
                 <NftPreview
                   url={token.medium}
                   name={token.name}

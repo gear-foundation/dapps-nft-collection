@@ -4,7 +4,6 @@ import { useAtom } from 'jotai';
 import { cx, shortenString } from '@/utils';
 import { ADDRESS } from '@/consts';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
-import coin from '@/assets/icons/vara-coin-silver.png';
 import { WalletInfoProps } from './WalletInfo.interfaces';
 import { Button } from '@/ui';
 import { WalletModal } from '../WalletModal';

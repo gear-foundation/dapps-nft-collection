@@ -1,10 +1,11 @@
-import { useEffect, useState, MutableRefObject, RefObject, useCallback } from 'react';
+import { useEffect, useState, MutableRefObject, RefObject, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ProgramMetadata, getProgramMetadata } from '@gear-js/api';
-import { useAlert, useReadFullState } from '@gear-js/react-hooks';
+import { useAlert, useReadFullState, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { useAtom } from 'jotai';
 import factoryMetaTxt from '@/assets/meta/collection_factory.meta.txt';
+import collectionMetaTxt from '@/assets/meta/nft_collection.meta.txt';
 import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
 import { Handler, ProgramStateRes } from '@/types';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
@@ -120,6 +121,22 @@ function useReadState<T>({ programId, meta }: { programId?: HexString; meta: str
   return useReadFullState<T>(programId, metadata);
 }
 
+function useCreateStreamMetadata() {
+  const meta = useMetadata(collectionMetaTxt);
+
+  const memoizedMeta = useMemo(() => meta, [meta]);
+
+  return memoizedMeta;
+}
+
+function useCollectionMessage(address: string) {
+  const meta = useCreateStreamMetadata();
+
+  const message = useSendMessage(address as HexString, meta);
+
+  return { meta, message };
+}
+
 export {
   useProgramMetadata,
   useContractAddressSetup,
@@ -128,4 +145,5 @@ export {
   useMediaQuery,
   useFactoryState,
   useReadState,
+  useCollectionMessage,
 };
