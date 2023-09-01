@@ -42,7 +42,6 @@ jobs:
       - name: Build and push NFT Collection image
         uses: docker/build-push-action@master
         with:
-          file: frontend/Dockerfile
           context: frontend
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
