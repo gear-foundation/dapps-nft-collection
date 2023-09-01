@@ -8,15 +8,6 @@ RUN apk update
 
 RUN apk add xsel
 
-REACT_APP_AUTH_API_ADDRESS=https://gear-faucet.vara-network.io
-REACT_APP_TESTNET_URL=https://incentivized.vara-network.io
-REACT_APP_FACTORY_ADDRESS=0x27e4f5e4e300deb32642e077bfde29e825bfb7847791f9778dbeeb9bf196334e
-REACT_APP_COLLECTION_ADDRESS=0x24a14ada58615e3215173ea58354d99a790590252a8eb8cae8995bfc8acd4062
-REACT_APP_NODE=wss://vit.vara-network.io
-REACT_APP_IPFS_ADDRESS=https://ipfs.gear-tech.io/api/v0
-REACT_APP_IPFS_GATEWAY_ADDRESS=https://ipfs-gw.gear-tech.io/ipfs
-REACT_APP_DEFAULT_NODES_URL=https://idea.gear-tech.io/gear-nodes
-
 
 ARG REACT_APP_FACTORY_ADDRESS \
     REACT_APP_AUTH_API_ADDRESS \
