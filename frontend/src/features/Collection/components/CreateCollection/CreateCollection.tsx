@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useForm } from '@mantine/form';
 import { useAtomValue } from 'jotai';
 import { UserMessageSent } from '@gear-js/api';
@@ -16,21 +17,24 @@ import { ACCOUNT_ATOM } from '@/atoms';
 import { useFactoryMessage } from '../../hooks';
 import { NftCreationSuccessModal } from '../NftCreationSuccessModal';
 import { ADDRESS } from '@/consts';
+import { TESTNET_USERNAME_ATOM } from '@/features/Auth/atoms';
 
 const collectionName = 'NFT collection on Vara Incentivized Testnet';
 const collectionDescription = (name: string) =>
   `Welcome to ${name}'s enchanting NFT collection crafted on Vara Incentivized Testnet. Embark on a mesmerizing journey through the boundless expanse of digital realms, where imagination meets technology, and creativity knows no bounds.`;
 
-function CreateCollection(props: CreateCollectionProps) {
+function CreateCollection() {
+  const navigate = useNavigate();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
-  const [newCollectionId, setNewCollectionId] = useState<string | null>('1111');
+  const [newCollectionId, setNewCollectionId] = useState<string | null>('');
+  const testnetUserName = useAtomValue(TESTNET_USERNAME_ATOM);
   const { api } = useApi();
   const account = useAtomValue(ACCOUNT_ATOM);
   const { meta: factoryMeta, message: factoryMessage } = useFactoryMessage();
 
   const form = useForm<ContractFormValues>({
     initialValues: {
-      name: `${account?.meta.name} ${collectionName}`,
+      name: `${testnetUserName} ${collectionName}`,
       description: collectionDescription(account?.meta.name || ''),
       media: [],
     },
@@ -56,7 +60,6 @@ function CreateCollection(props: CreateCollectionProps) {
     };
 
     factoryMessage(payload);
-    //onSuccess -> replies
   };
 
   const handleContinue = () => {
@@ -67,10 +70,10 @@ function CreateCollection(props: CreateCollectionProps) {
 
   useEffect(() => {
     if (account) {
-      setFieldValue('name', `${account?.meta.name} ${collectionName}`);
-      setFieldValue('description', collectionDescription(account?.meta.name || ''));
+      setFieldValue('name', `${testnetUserName} ${collectionName}`);
+      setFieldValue('description', collectionDescription(testnetUserName || ''));
     }
-  }, [account, setFieldValue]);
+  }, [account, setFieldValue, testnetUserName]);
 
   const getDecodedPayload = (payload: Vec<u8>) => {
     if (factoryMeta?.types.handle.output) {
@@ -85,7 +88,6 @@ function CreateCollection(props: CreateCollectionProps) {
   };
 
   const handleEvents = ({ data }: UserMessageSent) => {
-    console.log(data);
     const { message } = data;
     const { destination, source, payload } = message;
     const isOwner = destination.toHex() === account?.decodedAddress;
@@ -118,6 +120,10 @@ function CreateCollection(props: CreateCollectionProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, account?.decodedAddress, factoryMeta]);
 
+  const handleCancel = () => {
+    navigate(-1);
+  };
+
   return (
     <>
       <form onSubmit={onSubmit(handleCreateCollection)} className={cx(styles.container)}>
@@ -126,12 +132,12 @@ function CreateCollection(props: CreateCollectionProps) {
           <div className={cx(styles.content)}>
             <span className={cx(styles['block-title'])}>Name</span>
             <span className={cx(styles['block-name'])}>
-              {account?.meta.name} {collectionName}
+              {testnetUserName} {collectionName}
             </span>
           </div>
           <div className={cx(styles.content)}>
             <span className={cx(styles['block-title'])}>Description</span>
-            <span className={cx(styles['block-description'])}>{collectionDescription(account?.meta.name || '')}</span>
+            <span className={cx(styles['block-description'])}>{collectionDescription(testnetUserName || '')}</span>
           </div>
           <div className={cx(styles.uploader)}>
             <div className={cx(styles.content)}>
@@ -152,7 +158,12 @@ function CreateCollection(props: CreateCollectionProps) {
           </div>
           <div className={cx(styles.buttons)}>
             <Button variant="primary" className={cx(styles.button)} label="Create collection" type="submit" />
-            <Button variant="primary" className={cx(styles.button, styles['button-grey'])} label="Cancel" />
+            <Button
+              variant="primary"
+              className={cx(styles.button, styles['button-grey'])}
+              label="Cancel"
+              onClick={handleCancel}
+            />
           </div>
         </div>
       </form>

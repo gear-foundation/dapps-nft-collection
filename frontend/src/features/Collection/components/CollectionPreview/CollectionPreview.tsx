@@ -1,6 +1,5 @@
 import styles from './CollectionPreview.module.scss';
 import { cx } from '@/utils';
-import dummyNft from './dummy-nft-preview.png';
 import { ReactComponent as IcImage } from '../../assets/images/ic-image-24.svg';
 import { ReactComponent as Clocks } from '../../assets/images/watch-later-24px.svg';
 import { CollectionPreviewProps } from './CollectionPreview.interfaces';
@@ -8,18 +7,32 @@ import { DescriptionItem } from '@/components';
 import { Button } from '@/ui';
 import { getNotMintedTokens, getTimeFormatFromStateDate } from '../../utils';
 
-function CollectionPreview({ collection, tokens }: CollectionPreviewProps) {
+const sliceConfig = (length: number) => {
+  if (length === 1) {
+    return 1;
+  }
+
+  if (length > 1 && length < 7) {
+    return 4;
+  }
+
+  return 9;
+};
+
+function CollectionPreview({ collection }: CollectionPreviewProps) {
   const {
     collection: { name },
     timeCreation,
+    tokens,
   } = collection;
   const nftMaxCount = 10;
 
   return (
     <div className={cx(styles.card)}>
-      <div className={cx(styles['image-wrapper'])}>
-        <div className={cx(styles.dummy)} />
-        <img src={tokens[0].medium} alt="" className={cx(styles.image)} />
+      <div className={cx(styles['image-wrapper'], styles[`image-wrapper-mosaic-${sliceConfig(tokens.length)}`])}>
+        {tokens.slice(tokens.length - sliceConfig(tokens.length), tokens.length).map((item) => (
+          <img key={item.id} src={item.medium} alt="nft" className={cx(styles.image)} />
+        ))}
         {getNotMintedTokens(tokens).length > 0 && (
           <Button
             label="Available to Mint!"

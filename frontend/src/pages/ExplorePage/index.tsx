@@ -8,6 +8,7 @@ import { COLLECTION, NFT } from '@/routes';
 import { AllData } from '@/features/Collection/types';
 import { ACCOUNT_ATOM } from '@/atoms';
 import { NftPreview } from '@/features/Nft/components/NftPreview';
+import { CollectionFilter, NftFilter, makeCollectionsStructure, makeNftsStructure } from './utils';
 
 function ExplorePage() {
   const collections = useAtomValue(COLLECTIONS);
@@ -16,16 +17,27 @@ function ExplorePage() {
     nfts: [],
   });
   const [chosenData, setChosenData] = useState<'nfts' | 'collections'>('collections');
+  const [chosenFilter, setChosenFilter] = useState<'availableToMint' | 'allCollections'>('availableToMint');
   const account = useAtomValue(ACCOUNT_ATOM);
 
   const handleChooseData = (option: 'nfts' | 'collections') => {
     setChosenData(option);
   };
 
+  const handleChooseFilter = (option: 'availableToMint' | 'allCollections') => {
+    setChosenFilter(option);
+  };
+
   const filterOptions = {
     'Available to Mint': {
       label: 'Available to Mint',
       value: 'availableToMint',
+      onSelect: () => handleChooseFilter('availableToMint'),
+    },
+    'All Collections': {
+      label: 'All Collections',
+      value: 'allCollections',
+      onSelect: () => handleChooseFilter('allCollections'),
     },
   };
 
@@ -45,22 +57,20 @@ function ExplorePage() {
 
   useEffect(() => {
     if (collections) {
-      const collectionKeys = Object.keys(collections);
-
       setAllData(() => ({
-        collections: collectionKeys
-          .map((key) => collections[key])
+        collections: new CollectionFilter(makeCollectionsStructure(collections))
+          .filter(chosenFilter)
           .map((collection) => ({
             component: (
               <Link to={`${COLLECTION}/${collection.id}`}>
-                <CollectionPreview collection={collection} tokens={collection.tokens} />
+                <CollectionPreview collection={collection} />
               </Link>
             ),
             id: collection.id,
           })),
-        nfts: [...collectionKeys.map((key) => collections[key].tokens.map((token) => token))].flat().map((token) => ({
+        nfts: new NftFilter(makeNftsStructure(collections)).filter(chosenFilter).map((token) => ({
           component: (
-            <Link to={`${NFT}`}>
+            <Link to={`${NFT}/${token.id}`}>
               <NftPreview
                 url={token.medium}
                 name={token.name}
@@ -74,7 +84,7 @@ function ExplorePage() {
         })),
       }));
     }
-  }, [account?.decodedAddress, collections]);
+  }, [account?.decodedAddress, collections, chosenFilter]);
 
   return (
     <GalleryCollection

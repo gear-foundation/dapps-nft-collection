@@ -28,7 +28,11 @@ export interface ProgramFactoryState {
   txId: number;
 }
 
-export type Token = {};
+export type Token = {
+  owner: string;
+  medium: string;
+  timeMinted: string;
+};
 
 export interface CollectionState {
   availableMedia: string[];

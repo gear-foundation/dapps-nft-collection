@@ -6,11 +6,18 @@ import { ReactComponent as AvaVara } from '@/assets/icons/ava-vara-black.svg';
 import { ReactComponent as ContractAddress } from '@/assets/icons/contract-address-rounded.svg';
 import { ReactComponent as PenEdit } from '@/assets/icons/ic-edit-24.svg';
 import { useClickOutside } from '@/hooks';
+import { NodeSwitch } from '@/features/NodeSwitch';
+import { Chain } from '@/features/NodeSwitch/components/NodeSwitch/NodeSwitch.interfaces';
 
 function ContractInfo() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLButtonElement>(null);
+  const [currentChain, setCurrentChain] = useState<Chain>(null);
+
+  const handleChangeChain = (chain: Chain) => {
+    setCurrentChain(chain);
+  };
 
   useClickOutside(
     () => {
@@ -41,14 +48,20 @@ function ContractInfo() {
             </div>
             <PenEdit className={cx(styles['item-edit-icon'])} />
           </div>
-          <div className={cx(styles.item)}>
-            <AvaVara className={cx(styles['item-prefix-icon'])} />
-            <div className={cx(styles['item-content'])}>
-              <span className={cx(styles['item-title'])}>Vara Testnent</span>
-              <span className={cx(styles['item-value'])}>wss://vara.rs</span>
-            </div>
-            <PenEdit className={cx(styles['item-edit-icon'])} />
-          </div>
+          <NodeSwitch onChainChange={handleChangeChain}>
+            {currentChain ? (
+              <div className={cx(styles.item)}>
+                <currentChain.icon className={cx(styles['item-prefix-icon'])} />
+                <div className={cx(styles['item-content'])}>
+                  <span className={cx(styles['item-title'])}>{currentChain.name}</span>
+                  <span className={cx(styles['item-value'])}>{currentChain.address}</span>
+                </div>
+                <PenEdit className={cx(styles['item-edit-icon'])} />
+              </div>
+            ) : (
+              <></>
+            )}
+          </NodeSwitch>
         </div>
       )}
     </div>

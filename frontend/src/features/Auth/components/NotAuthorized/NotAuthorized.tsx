@@ -9,7 +9,7 @@ function NotAuthorized() {
     <div className={cx(styles.container)}>
       <div className={cx(styles.content)}>
         <div className={cx(styles.header)}>
-          <h1 className={cx(styles['heading-title'], styles[`heading-title-with-gradient`])}>Racing Car game</h1>
+          <h1 className={cx(styles['heading-title'], styles[`heading-title-with-gradient`])}>NFT Collection</h1>
           <div>
             You are currently not part of the Vara Network Testnet. Please register using the referral link in the
             Testnet portal:

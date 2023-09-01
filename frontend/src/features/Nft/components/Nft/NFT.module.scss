@@ -1,20 +1,19 @@
 @use '~styles/variables' as *;
 @use '~styles/mixins' as *;
 
-.cont {
+.container {
   width: 100%;
   max-width: 1200px;
   padding-left: 16px;
   padding-right: 16px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 100px;
 }
 
-
-.container {
+.wrapper {
   display: flex;
   gap: 60px;
-  margin-bottom: 100px;
 
   @include lg {
     flex-direction: column;
@@ -34,8 +33,6 @@
 .imageWrapper {
   width: 100%;
   margin-bottom: 25px;
-  padding: 32px;
-  background: url(../../assets/images/bg-secondary.svg) center/ 100% 100% no-repeat;
 
   img {
     width: 100%;
@@ -47,16 +44,17 @@
 .footer {
   @include gap(20px, right);
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 30px 22px;
-  color: #fff;
-  background: linear-gradient(183.24deg, rgba(0, 0, 0, 0.2) 32.24%, rgba(14, 211, 163, 0.2) 91.35%), #000000;
+  height: 90px;
+  padding: 0 40px;
+  border: 1px solid gray;
+
   border-radius: 4px;
   overflow: hidden;
 
   &Wrapper {
     width: 100%;
-    padding: 0 32px;
 
     @include lg {
       padding: 0;
@@ -76,6 +74,29 @@
 
     &:hover {
       background-color: #29c6a1;
+    }
+  }
+
+  .spec-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    .view-button {
+      height: 40px;
+      padding: 0 24px;
+      background: #f3f3f3;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: 0.5s;
+
+      &:not(:disabled):hover {
+        background: gray;
+      }
     }
   }
 }
@@ -114,6 +135,7 @@
   font-weight: 500;
   font-size: 20px;
   line-height: 140%;
+  color: #0ED3A3;
 }
 
 .description {

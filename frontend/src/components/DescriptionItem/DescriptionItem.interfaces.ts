@@ -2,5 +2,5 @@ import { ReactNode } from 'react';
 
 export interface DescriptionItemProps {
   icon: ReactNode;
-  text: string;
+  text: ReactNode;
 }

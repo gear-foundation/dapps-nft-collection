@@ -6,7 +6,9 @@ export type Token = {
   medium: string;
   timeMinted: string;
   name: string;
+  description: string;
   collectionName: string;
+  id: string;
 };
 
 export interface Collection {

@@ -21,7 +21,6 @@ function SwitchModal({ sections, onRemove, onAdd, onClose }: Props) {
   const { nodeAddress } = useNodeAddress();
   const [selectedNode, setSelectedNode] = useState(nodeAddress);
   const isCurrentNode = selectedNode === nodeAddress;
-
   const [searchParams, setSearchParams] = useSearchParams();
 
   const switchNode = () => {
@@ -31,6 +30,7 @@ function SwitchModal({ sections, onRemove, onAdd, onClose }: Props) {
     setSearchParams(searchParams);
 
     localStorage.setItem(LOCAL_STORAGE.NODE, selectedNode);
+
     window.location.reload();
   };
 

@@ -7,7 +7,7 @@ import { MainPage } from '@/pages';
 import { Header, Footer } from '@/components';
 import { withProviders } from '@/hocs';
 import { ScrollToTop, cx } from '@/utils';
-import { LOGIN, NOT_AUTHORIZED } from '@/App.routes';
+import { LOGIN, NOT_AUTHORIZED } from '@/routes';
 import { Loader } from './components/Loader';
 import styles from './App.module.scss';
 import 'babel-polyfill';
@@ -17,13 +17,14 @@ import { ProtectedRoute } from './features/Auth/components';
 import { useWalletSync } from './features/Wallet/hooks';
 import { LoginPage } from './pages/LoginPage';
 import { NotAuthorizedPage } from './pages/NotAuthorizedPage';
-import { COLLECTION, CREATE_COLLECTION, EXPLORE, MAIN, NFT, YOUR_SPACE, menu } from './routes';
+import { COLLECTION, CREATE_COLLECTION, EXPLORE, MAIN, NFT, SEARCH, YOUR_SPACE, menu } from './routes';
 import { ExplorePage } from './pages/ExplorePage';
 import { YourSpacePage } from './pages/YourSpacePage';
 import { CreateCollectionPage } from './pages/CreateCollectionPage';
 import { CollectionPage } from './pages/CollectionPage';
 import { NftPage } from './pages/NftPage';
 import { useCollectionsState } from './features/Collection/hooks';
+import { SearchPage } from './pages/SearchPage';
 
 function AppComponent() {
   const { isApiReady } = useApi();
@@ -92,10 +93,18 @@ function AppComponent() {
                 }
               />
               <Route
-                path={`${NFT}/:id`}
+                path={`${NFT}/:collectionId/:nftId`}
                 element={
                   <ProtectedRoute>
                     <NftPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path={`${SEARCH}`}
+                element={
+                  <ProtectedRoute>
+                    <SearchPage />
                   </ProtectedRoute>
                 }
               />
